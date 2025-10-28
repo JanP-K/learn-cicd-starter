@@ -35,4 +35,3 @@ func TestGetAPIKey_WrongScheme(t *testing.T) {
 		t.Fatalf("expected error for wrong scheme")
 	}
 }
-
