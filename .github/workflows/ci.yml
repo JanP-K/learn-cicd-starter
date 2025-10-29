@@ -3,6 +3,8 @@ name: ci
 on:
   pull_request:
     branches: [main]
+  push:
+    branches: [main]
 
 jobs:
   tests:
@@ -31,3 +33,7 @@ jobs:
       - name: Check formatting (fail if changes needed)
         shell: bash
         run: test -z "$(go fmt ./...)"
+      - name: Install staticcheck
+        run: go install honnef.co/go/tools/cmd/staticcheck@latest
+      - name: Run staticcheck
+        run: $(go env GOPATH)/bin/staticcheck ./...
