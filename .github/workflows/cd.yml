@@ -20,15 +20,19 @@ jobs:
       - name: Build production binary
         run: ./scripts/buildprod.sh
 
-      # 🔐 GCP-Login mit deinem Secret
+      # 1️⃣ Erst authentifizieren
+      - name: Auth to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      # 2️⃣ Dann gcloud bereitstellen
       - name: Set up gcloud
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: notely-476707
-          service_account_key: ${{ secrets.GCP_CREDENTIALS }}
-          export_default_credentials: true
 
-      # 🐳 Image in Artifact Registry bauen & pushen
+      # 3️⃣ Jetzt können wir bauen & pushen
       - name: Build and push to Artifact Registry
         run: |
           gcloud builds submit \
