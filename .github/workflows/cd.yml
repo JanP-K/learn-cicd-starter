@@ -8,6 +8,11 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
+
+    # 🆕 HIER kommt das Secret rein, damit dein Script die DB kennt
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -19,6 +24,16 @@ jobs:
 
       - name: Build production binary
         run: ./scripts/buildprod.sh
+
+      # 🆕 Goose installieren, damit migrateup.sh funktioniert
+      - name: Install goose
+        run: |
+          go install github.com/pressly/goose/v3/cmd/goose@latest
+          echo "$HOME/go/bin" >> $GITHUB_PATH
+
+      # 🆕 Migration ausführen, bevor das Image gebaut & deployed wird
+      - name: Run DB migrations
+        run: ./scripts/migrateup.sh
 
       # 1️⃣ Erst authentifizieren
       - name: Auth to GCP
